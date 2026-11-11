@@ -23,3 +23,10 @@ build/
 tmp/
 *.tmp
 *.bak
+
+# OJT Documentation & Logbooks
+*logbook*
+*Logbook*
+*.pdf
+OJT/
+
