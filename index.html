@@ -44,56 +44,75 @@
                 <i class="bi bi-shield-check text-primary fs-1"></i>
                 <span class="fw-bold fs-2 text-dark tracking-wide">TrustVendor</span>
               </div>
-              <h1 class="h4 fw-bold text-dark mb-2">B2B Vendor Onboarding & Compliance Portal</h1>
+              <h1 class="h4 fw-bold text-dark mb-2">B2B Vendor Onboarding &amp; Compliance Portal</h1>
               <p class="text-muted mx-auto" style="max-width: 620px;">
-                Enterprise multi-tenant regulatory verification platform. Enforcing 4-tier chain of command, automated document expiration calculations, heuristic risk tiers, and partitioned LocalDB persistence.
+                Enterprise multi-tenant regulatory verification platform enforcing 4-tier chain of command, automated document expiration calculations, heuristic risk tiers, and partitioned LocalDB persistence.
               </p>
-              <div class="d-flex flex-wrap justify-content-center gap-2 mb-2">
-                <span class="badge bg-light text-muted border px-3 py-1">Project ID: PST_PD_116</span>
-                <span class="badge bg-light text-muted border px-3 py-1">Batch 2026 Level 2</span>
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1">Offline Firebase Auth &amp; LocalDB</span>
-              </div>
-              
-              <!-- Offline Firebase Authentication Engine Indicator -->
-              <div class="mt-2">
-                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">
-                  <i class="bi bi-shield-lock-fill me-1"></i> Offline Firebase Auth Engine (Self-Contained LocalDB)
+              <div class="d-flex justify-content-center gap-2">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 fw-semibold">
+                  <i class="bi bi-shield-lock-fill me-1"></i> Offline LocalDB Engine &bull; Project ID: PST_PD_116
                 </span>
               </div>
             </div>
 
-            <!-- 1-Click Quick Demo Persona Login Pills -->
-            <div class="card border-primary-subtle bg-light shadow-sm p-3 mb-4">
-              <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
-                <div>
-                  <span class="fw-bold text-dark small"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Demo Persona Switcher:</span>
-                  <div class="text-muted small" style="font-size:0.75rem;">Instant 1-click authentication into each 4-tier role hierarchy level:</div>
-                </div>
-                <div class="d-flex flex-wrap gap-1">
-                  <button type="button" class="btn btn-sm btn-outline-dark" data-demo-login="superadmin" title="Pre-Set Root Super Admin">
-                    <i class="bi bi-shield-shaded me-1 text-purple"></i> Super Admin
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary" data-demo-login="admin" title="Operations Admin">
-                    <i class="bi bi-shield-lock me-1"></i> Operations Admin
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-success" data-demo-login="manager" title="Procurement Manager">
-                    <i class="bi bi-shield-check me-1"></i> Procurement Manager
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-primary" data-demo-login="vendor-approved" title="Approved External Vendor">
-                    <i class="bi bi-building-check me-1"></i> Approved Vendor
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-warning text-dark" data-demo-login="vendor-pending" title="Vendor Pending Approval (Holding Screen)">
-                    <i class="bi bi-hourglass-split me-1"></i> Pending Vendor
-                  </button>
-                </div>
-              </div>
-            </div>
+            <!-- Unified Corporate Authentication Card -->
+            <div class="row justify-content-center mb-4">
+              <div class="col-lg-10 col-xl-9">
+                <div class="portal-card shadow-sm border-0">
+                  
+                  <!-- 1-Click Quick Demo Persona Access -->
+                  <div class="p-3 p-md-4 border-bottom bg-light rounded-top">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
+                      <div>
+                        <div class="fw-bold text-dark small">
+                          <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Demo Persona Access
+                        </div>
+                        <div class="text-muted small" style="font-size:0.75rem;">1-Click instant authentication into each 4-tier role hierarchy level:</div>
+                      </div>
+                      <span class="badge bg-white text-muted border small d-none d-md-inline-block">Instant Access</span>
+                    </div>
 
-            <!-- Hybrid Firebase Auth & Credential Card -->
-            <div class="row justify-content-center mb-5">
-              <div class="col-md-10 col-lg-8">
-                <div class="portal-card shadow-sm">
-                  <div class="portal-card-header bg-white pb-0 border-bottom-0">
+                    <div class="row g-2">
+                      <div class="col-6 col-md">
+                        <button type="button" class="btn btn-outline-dark btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="superadmin" title="Pre-Set Root Super Admin">
+                          <i class="bi bi-shield-shaded fs-5 text-purple mb-1"></i>
+                          <span class="fw-bold" style="font-size: 0.78rem;">Super Admin</span>
+                          <span class="text-muted" style="font-size: 0.68rem;">Root Authority</span>
+                        </button>
+                      </div>
+                      <div class="col-6 col-md">
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="admin" title="Operations Admin">
+                          <i class="bi bi-shield-lock fs-5 text-warning mb-1"></i>
+                          <span class="fw-bold" style="font-size: 0.78rem;">Ops Admin</span>
+                          <span class="text-muted" style="font-size: 0.68rem;">Operations Lead</span>
+                        </button>
+                      </div>
+                      <div class="col-6 col-md">
+                        <button type="button" class="btn btn-outline-success btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="manager" id="authCardManager" title="Procurement Manager">
+                          <i class="bi bi-shield-check fs-5 text-success mb-1"></i>
+                          <span class="fw-bold" style="font-size: 0.78rem;">Manager</span>
+                          <span class="text-muted" style="font-size: 0.68rem;">Compliance Lead</span>
+                        </button>
+                      </div>
+                      <div class="col-6 col-md">
+                        <button type="button" class="btn btn-outline-primary btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="vendor-approved" id="authCardVendor" title="Approved External Vendor">
+                          <i class="bi bi-building-check fs-5 text-primary mb-1"></i>
+                          <span class="fw-bold" style="font-size: 0.78rem;">Vendor</span>
+                          <span class="text-muted" style="font-size: 0.68rem;">Active Supplier</span>
+                        </button>
+                      </div>
+                      <div class="col-12 col-md">
+                        <button type="button" class="btn btn-outline-warning text-dark btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="vendor-pending" title="Vendor Pending Approval (Holding Screen)">
+                          <i class="bi bi-hourglass-split fs-5 text-warning mb-1"></i>
+                          <span class="fw-bold" style="font-size: 0.78rem;">Pending Vendor</span>
+                          <span class="text-muted" style="font-size: 0.68rem;">Holding Review</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tabbed Manual Login / Registration -->
+                  <div class="portal-card-header bg-white pb-0 border-bottom-0 pt-3 px-4">
                     <ul class="nav nav-tabs card-header-tabs" id="authTabs" role="tablist">
                       <li class="nav-item" role="presentation">
                         <button class="nav-link active fw-bold text-dark" id="authTabSignInBtn" data-bs-toggle="tab" data-bs-target="#authTabSignIn" type="button" role="tab" aria-controls="authTabSignIn" aria-selected="true">
@@ -115,9 +134,9 @@
                       <div class="tab-pane fade show active" id="authTabSignIn" role="tabpanel" aria-labelledby="authTabSignInBtn">
                         <form id="authSignInForm" novalidate>
                           <div class="alert alert-light border small text-muted d-flex align-items-center gap-2 mb-3">
-                            <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+                            <i class="bi bi-info-circle-fill text-primary fs-5 flex-shrink-0"></i>
                             <div>
-                              <strong>Hard-Coded Super Admin Interceptor:</strong> Use <code>superadmin@trustvendor.com</code> / <code>SuperAdmin2026!</code> for pre-set root authority.
+                              <strong>Default Super Admin:</strong> <code>superadmin@trustvendor.com</code> / <code>SuperAdmin2026!</code>
                             </div>
                           </div>
 
@@ -219,76 +238,9 @@
               </div>
             </div>
 
-            <!-- Role Selection Cards Grid with Visual Active States (Preserved from UI Wireframes) -->
-            <div class="row g-4 justify-content-center">
-              
-              <!-- Persona 1: External Vendor POC Card -->
-              <div class="col-md-6">
-                <div class="auth-role-card shadow-sm border-primary bg-primary-subtle bg-opacity-10" id="authCardVendor" style="cursor: pointer;">
-                  <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="auth-icon-wrapper auth-icon-vendor mb-0">
-                      <i class="bi bi-building-check"></i>
-                    </div>
-                    <span id="authBadgeVendor" class="badge bg-success-subtle text-success border border-success-subtle py-1 px-2">
-                      <i class="bi bi-check-circle-fill me-1"></i> Active Selection
-                    </span>
-                  </div>
-
-                  <h2 class="h5 fw-bold text-dark mb-1">External Vendor POC</h2>
-                  <p class="text-muted small mb-3">
-                    Submit corporate details, dynamic category compliance packs, quota-safe PDF certifications, and track review status.
-                  </p>
-
-                  <ul class="list-unstyled small text-secondary mb-4 flex-grow-1">
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> 3-Step Dynamic Onboarding Form</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Category-Driven Dynamic Document Checklist</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Promise-Based Mock EIN Verification</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Real-Time Dossier Status Tracker</li>
-                  </ul>
-
-                  <button type="button" class="btn btn-portal-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="btnEnterVendor" data-auth-role="vendor" data-demo-login="vendor-approved">
-                    <span>Enter as External Vendor</span>
-                    <i class="bi bi-arrow-right"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Persona 2: Procurement Manager Card -->
-              <div class="col-md-6">
-                <div class="auth-role-card shadow-sm border-slate-200" id="authCardManager" style="cursor: pointer;">
-                  <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="auth-icon-wrapper auth-icon-manager mb-0">
-                      <i class="bi bi-shield-check"></i>
-                    </div>
-                    <span id="authBadgeManager" class="badge bg-primary-subtle text-primary border border-primary-subtle py-1 px-2 d-none">
-                      <i class="bi bi-check-circle-fill me-1"></i> Active Selection
-                    </span>
-                  </div>
-
-                  <h2 class="h5 fw-bold text-dark mb-1">Procurement Manager</h2>
-                  <p class="text-muted small mb-3">
-                    Access master compliance dashboard, 30/60/90-day expiration horizons, review queues, Approve/Reject gates, and audit logs.
-                  </p>
-
-                  <ul class="list-unstyled small text-secondary mb-4 flex-grow-1">
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Centralized Vendor Directory & Search</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Conservative 1-Expired-Doc = Blocked Rule</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Tier 1–3 Heuristic Risk Monitoring</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Executive PDF & CSV Data Exports</li>
-                  </ul>
-
-                  <button type="button" class="btn btn-portal-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="btnEnterManager" data-auth-role="manager" data-demo-login="manager">
-                    <span>Enter as Procurement Manager</span>
-                    <i class="bi bi-arrow-right"></i>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-
             <!-- Team Attribution Footer -->
-            <div class="text-center mt-5 text-muted small">
-              Frontend UI/UX Engineering: <strong>Mohd. Maaz Khan</strong> • Data Engine & LocalDB: <strong>Abhinaba Das</strong>
+            <div class="text-center mt-4 text-muted small">
+              Frontend UI/UX Engineering: <strong>Mohd. Maaz Khan</strong> &bull; Data Engine &amp; LocalDB: <strong>Abhinaba Das</strong>
             </div>
 
           </div>
@@ -1339,7 +1291,7 @@
         <div class="modal-header bg-light border-bottom">
           <div>
             <span class="badge bg-primary text-white mb-1" id="reviewModalVendorId">VEN-0000</span>
-            <h5 class="modal-title fw-bold text-dark" id="vendorReviewModalLabel" data-toolbar="3-state-review">
+            <h5 class="modal-title fw-bold text-dark" id="vendorReviewModalLabel">
               <span id="reviewModalVendorName">Vendor Dossier</span>
             </h5>
           </div>
@@ -1461,7 +1413,7 @@
         <div class="modal-body p-4 text-center bg-slate-50">
           <div class="p-5 border rounded bg-white shadow-sm my-2">
             <i class="bi bi-file-earmark-lock display-3 text-secondary mb-3"></i>
-            <h5 class="fw-bold text-dark" id="docPreviewVendor" data-importance-picker="enabled">Vendor Compliance Certificate</h5>
+            <h5 class="fw-bold text-dark" id="docPreviewVendor">Vendor Compliance Certificate</h5>
             <p class="text-muted small mb-3">
               Document certified and registered in LocalDB metadata. Quota-safe metadata extracted to respect client storage limits.
             </p>
@@ -1543,10 +1495,14 @@
   </div>
 
   <!-- =========================================================================
-       SCRIPTS: Bootstrap 5.3 + Chart.js + Modular Controllers (Abhinaba Das & Maaz Khan)
+       SCRIPTS: Bootstrap 5.3 + Chart.js + jsPDF + Modular Controllers (Abhinaba Das & Maaz Khan)
        ========================================================================= -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <!-- jsPDF & AutoTable for Executive PDF Dossier Export Engine (Module 6) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
   <!-- 1. Core Partitioned Storage Engine (Abhinaba Das - Week 1 Deliverable) -->
   <script src="js/localdb.js"></script>
