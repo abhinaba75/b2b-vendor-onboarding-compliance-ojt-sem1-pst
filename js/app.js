@@ -813,6 +813,10 @@
         uploadedMap[d.docId] = d;
       });
 
+      const minDate = (window.PortalUI && typeof window.PortalUI.getTodayDateString === 'function')
+        ? window.PortalUI.getTodayDateString()
+        : new Date().toLocaleDateString('en-CA');
+
       let html = `
         <div class="alert alert-light border small text-muted mb-4 d-flex align-items-center justify-content-between">
           <div>
@@ -826,6 +830,14 @@
       docsToRender.forEach(req => {
         const existingDoc = uploadedMap[req.id];
         const hasUploaded = !!existingDoc;
+
+        // Keep PortalUI state synchronized with pre-existing uploads
+        if (existingDoc && window.PortalUI && window.PortalUI.state && window.PortalUI.state.form) {
+          window.PortalUI.state.form.uploadedDocuments[req.id] = window.PortalUI.state.form.uploadedDocuments[req.id] || {};
+          if (existingDoc.docName) window.PortalUI.state.form.uploadedDocuments[req.id].name = existingDoc.docName;
+          if (existingDoc.size) window.PortalUI.state.form.uploadedDocuments[req.id].size = existingDoc.size;
+          if (existingDoc.expDate) window.PortalUI.state.form.uploadedDocuments[req.id].expiryDate = existingDoc.expDate;
+        }
 
         html += `
           <div class="document-upload-row portal-card p-3 mb-3 ${hasUploaded ? 'border-success bg-success-subtle bg-opacity-10' : ''}" id="docRow_${req.id}">
@@ -852,6 +864,7 @@
                        class="form-control form-control-sm quota-safe-pdf-input" 
                        id="fileInput_${req.id}" 
                        data-doc-id="${req.id}" 
+                       data-doc-key="${req.id}"
                        data-doc-title="${req.title}"
                        data-mandatory="${req.mandatory}"
                        accept=".pdf,application/pdf" 
@@ -869,9 +882,11 @@
                 <input type="date" 
                        class="form-control form-control-sm doc-expiry-input" 
                        id="expiryDate_${req.id}" 
+                       name="expiry_${req.id}"
                        data-doc-id="${req.id}"
+                       data-doc-key="${req.id}"
                        value="${existingDoc ? existingDoc.expDate : ''}"
-                       min="${new Date().toISOString().split('T')[0]}" 
+                       min="${minDate}" 
                        ${req.mandatory ? 'required' : ''}>
                 <div class="invalid-feedback">Must be a valid future expiration date.</div>
               </div>
@@ -926,6 +941,21 @@
             docStatus: 'Pending Review'
           };
 
+          // Keep window.PortalUI.state.form.uploadedDocuments synchronized
+          if (window.PortalUI && window.PortalUI.state && window.PortalUI.state.form) {
+            window.PortalUI.state.form.uploadedDocuments[docId] = window.PortalUI.state.form.uploadedDocuments[docId] || {};
+            window.PortalUI.state.form.uploadedDocuments[docId].name = file.name;
+            window.PortalUI.state.form.uploadedDocuments[docId].size = fileSizeKB;
+            window.PortalUI.state.form.uploadedDocuments[docId].type = 'application/pdf';
+            window.PortalUI.state.form.uploadedDocuments[docId].uploadDate = uploadTimestamp;
+            if (expDate) {
+              window.PortalUI.state.form.uploadedDocuments[docId].expiryDate = expDate;
+            }
+          }
+
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+
           // Save into active vendor state
           const curUser = window.PortalAuth.getCurrentUser();
           if (curUser) {
@@ -957,21 +987,62 @@
 
       // 2. Expiry date inputs
       document.querySelectorAll('.doc-expiry-input').forEach(input => {
-        input.onchange = () => {
-          const docId = input.getAttribute('data-doc-id');
-          const curUser = window.PortalAuth.getCurrentUser();
-          if (curUser) {
+        const handleExpiryChange = () => {
+          const docId = input.getAttribute('data-doc-id') || input.getAttribute('data-doc-key');
+          const expiryVal = input.value ? input.value.trim() : '';
+
+          if (docId && window.PortalUI && window.PortalUI.state && window.PortalUI.state.form) {
+            window.PortalUI.state.form.uploadedDocuments[docId] = window.PortalUI.state.form.uploadedDocuments[docId] || {};
+            window.PortalUI.state.form.uploadedDocuments[docId].expiryDate = expiryVal;
+          }
+
+          const curUser = window.PortalAuth ? window.PortalAuth.getCurrentUser() : null;
+          if (curUser && window.LocalDB) {
             let vendor = window.LocalDB.getVendorByUserId(curUser.uid);
-            if (vendor && vendor.docs) {
-              const doc = vendor.docs.find(d => d.docId === docId);
+            if (vendor) {
+              vendor.docs = vendor.docs || [];
+              let doc = vendor.docs.find(d => d.docId === docId);
               if (doc) {
-                doc.expDate = input.value;
-                window.LocalDB.saveVendor(vendor);
+                doc.expDate = expiryVal;
+              } else if (expiryVal) {
+                vendor.docs.push({
+                  docId: docId,
+                  docName: '',
+                  size: '',
+                  expDate: expiryVal,
+                  docStatus: 'Pending Review'
+                });
               }
+              window.LocalDB.saveVendor(vendor);
             }
           }
+
+          if (expiryVal) {
+            const isExpired = (window.PortalUI && typeof window.PortalUI.isDateExpired === 'function')
+              ? window.PortalUI.isDateExpired(expiryVal)
+              : false;
+
+            if (isExpired) {
+              input.classList.add('is-invalid');
+              input.classList.remove('is-valid');
+            } else {
+              input.classList.remove('is-invalid');
+              input.classList.add('is-valid');
+            }
+          } else {
+            input.classList.remove('is-valid');
+            if (input.required) {
+              input.classList.add('is-invalid');
+            } else {
+              input.classList.remove('is-invalid');
+            }
+          }
+
           this.recalculateVendorProgress();
         };
+
+        input.onchange = handleExpiryChange;
+        input.oninput = handleExpiryChange;
       });
 
       // 3. Form input live triggers for deterministic progress calculation
@@ -1019,7 +1090,10 @@
       let validUploadedCount = 0;
 
       docs.forEach(d => {
-        if (d.docName && d.expDate && new Date(d.expDate).getTime() > Date.now()) {
+        const isExp = (window.PortalUI && typeof window.PortalUI.isDateExpired === 'function')
+          ? window.PortalUI.isDateExpired(d.expDate)
+          : false;
+        if (d.docName && d.expDate && !isExp) {
           validUploadedCount++;
         }
       });

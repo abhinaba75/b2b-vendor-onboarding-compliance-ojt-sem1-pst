@@ -425,7 +425,7 @@
     if (!container) return;
 
     const requirements = state.complianceRequirements[category] || state.complianceRequirements['Logistics / Freight'];
-    const minDate = new Date().toISOString().split('T')[0];
+    const minDate = getTodayDateString();
 
     let html = `
       <div class="alert alert-light border border-slate-200 mb-4 py-2 px-3 d-flex align-items-center justify-content-between">
@@ -527,7 +527,7 @@
 
   function handleDocumentUpload(e) {
     const input = e.target;
-    const docKey = input.getAttribute('data-doc-key');
+    const docKey = input.getAttribute('data-doc-key') || input.getAttribute('data-doc-id');
     const file = input.files[0];
     const nameDisplay = document.getElementById(`fileNameDisplay_${docKey}`);
 
@@ -536,6 +536,7 @@
     if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
       input.value = '';
       input.classList.add('is-invalid');
+      input.classList.remove('is-valid');
       if (nameDisplay) {
         nameDisplay.innerHTML = '<span class="text-danger small"><i class="bi bi-x-circle me-1"></i>Invalid (.pdf only)</span>';
       }
@@ -569,17 +570,25 @@
 
   function handleExpiryDateChange(e) {
     const input = e.target;
-    const docKey = input.getAttribute('data-doc-key');
-    const expiryVal = input.value;
+    const docKey = input.getAttribute('data-doc-key') || input.getAttribute('data-doc-id');
+    const expiryVal = input.value ? input.value.trim() : '';
+
+    if (!docKey) return;
+
+    state.form.uploadedDocuments[docKey] = state.form.uploadedDocuments[docKey] || {};
+    state.form.uploadedDocuments[docKey].expiryDate = expiryVal;
 
     if (!expiryVal) {
+      input.classList.remove('is-valid');
+      if (input.required) {
+        input.classList.add('is-invalid');
+      } else {
+        input.classList.remove('is-invalid');
+      }
       updateDocRowStatusIcon(docKey);
       recalculateProgress();
       return;
     }
-
-    state.form.uploadedDocuments[docKey] = state.form.uploadedDocuments[docKey] || {};
-    state.form.uploadedDocuments[docKey].expiryDate = expiryVal;
 
     const isExpired = isDateExpired(expiryVal);
     if (isExpired) {
@@ -589,6 +598,21 @@
     } else {
       input.classList.remove('is-invalid');
       input.classList.add('is-valid');
+    }
+
+    // Synchronize to LocalDB if active vendor exists
+    const curUser = (window.PortalAuth && typeof window.PortalAuth.getCurrentUser === 'function') 
+      ? window.PortalAuth.getCurrentUser() 
+      : null;
+    if (curUser && window.LocalDB) {
+      const vendor = window.LocalDB.getVendorByUserId(curUser.uid);
+      if (vendor && vendor.docs) {
+        const d = vendor.docs.find(item => item.docId === docKey);
+        if (d) {
+          d.expDate = expiryVal;
+          window.LocalDB.saveVendor(vendor);
+        }
+      }
     }
 
     updateDocRowStatusIcon(docKey);
@@ -783,23 +807,97 @@
     }
 
     if (state.form.currentStep === 2) {
-      const requirements = state.complianceRequirements[state.form.selectedCategory] || [];
-      for (const req of requirements) {
-        if (req.mandatory) {
-          const docData = state.form.uploadedDocuments[req.id];
-          const fileInput = document.getElementById(`fileInput_${req.id}`);
-          const expiryInput = document.getElementById(`expiryDate_${req.id}`);
+      let requirements = [];
+      const schema = (window.LocalDB && typeof window.LocalDB.getRequirementSchema === 'function') 
+        ? window.LocalDB.getRequirementSchema() 
+        : null;
+      if (schema && schema.customDocumentTypes && schema.customDocumentTypes.length > 0) {
+        requirements = schema.customDocumentTypes;
+      } else {
+        requirements = state.complianceRequirements[state.form.selectedCategory] || state.complianceRequirements['Logistics / Freight'] || [];
+      }
 
-          if (!docData || !docData.name) {
-            isValid = false;
-            if (fileInput) fileInput.classList.add('is-invalid');
+      const curUser = (window.PortalAuth && typeof window.PortalAuth.getCurrentUser === 'function')
+        ? window.PortalAuth.getCurrentUser()
+        : null;
+      const vendorRecord = (curUser && window.LocalDB) ? window.LocalDB.getVendorByUserId(curUser.uid) : null;
+      const vendorDocs = vendorRecord && vendorRecord.docs ? vendorRecord.docs : [];
+
+      for (const req of requirements) {
+        const reqId = req.id;
+        const fileInput = document.getElementById(`fileInput_${reqId}`);
+        const expiryInput = document.getElementById(`expiryDate_${reqId}`);
+        const docData = state.form.uploadedDocuments[reqId] || {};
+        const savedDoc = vendorDocs.find(d => d.docId === reqId);
+
+        // Check if file is present
+        const hasFile = (docData && docData.name) || 
+                        (fileInput && fileInput.files && fileInput.files.length > 0) || 
+                        (savedDoc && savedDoc.docName);
+
+        if (req.mandatory && !hasFile) {
+          isValid = false;
+          if (fileInput) {
+            fileInput.classList.add('is-invalid');
+            fileInput.classList.remove('is-valid');
           }
-          if (!docData || !docData.expiryDate || isDateExpired(docData.expiryDate)) {
+        } else if (fileInput && hasFile) {
+          fileInput.classList.remove('is-invalid');
+          fileInput.classList.add('is-valid');
+        }
+
+        // Check expiration date
+        const expVal = (expiryInput && expiryInput.value) 
+          ? expiryInput.value.trim() 
+          : (docData.expiryDate || (savedDoc ? savedDoc.expDate : ''));
+
+        if (expiryInput) {
+          if (expVal) {
+            const expired = isDateExpired(expVal);
+            if (expired) {
+              isValid = false;
+              expiryInput.classList.add('is-invalid');
+              expiryInput.classList.remove('is-valid');
+            } else {
+              expiryInput.classList.remove('is-invalid');
+              expiryInput.classList.add('is-valid');
+              state.form.uploadedDocuments[reqId] = state.form.uploadedDocuments[reqId] || {};
+              state.form.uploadedDocuments[reqId].expiryDate = expVal;
+            }
+          } else if (req.mandatory) {
             isValid = false;
-            if (expiryInput) expiryInput.classList.add('is-invalid');
+            expiryInput.classList.add('is-invalid');
+            expiryInput.classList.remove('is-valid');
+          } else {
+            expiryInput.classList.remove('is-invalid');
           }
         }
       }
+
+      // Also validate any other rendered expiry inputs on currentPane
+      const renderedExpiryInputs = currentPane.querySelectorAll('.doc-expiry-input');
+      renderedExpiryInputs.forEach(expInput => {
+        const docId = expInput.getAttribute('data-doc-id') || expInput.getAttribute('data-doc-key');
+        const val = expInput.value ? expInput.value.trim() : '';
+        if (val) {
+          if (isDateExpired(val)) {
+            isValid = false;
+            expInput.classList.add('is-invalid');
+            expInput.classList.remove('is-valid');
+          } else {
+            expInput.classList.remove('is-invalid');
+            expInput.classList.add('is-valid');
+            if (docId) {
+              state.form.uploadedDocuments[docId] = state.form.uploadedDocuments[docId] || {};
+              state.form.uploadedDocuments[docId].expiryDate = val;
+            }
+          }
+        } else if (expInput.required) {
+          isValid = false;
+          expInput.classList.add('is-invalid');
+          expInput.classList.remove('is-valid');
+        }
+      });
 
       if (!isValid) {
         showErrorToast('Action Required: Attach all mandatory PDF compliance documents with valid future expiration dates.', 'Incomplete Documentation');
@@ -2497,11 +2595,28 @@
     showToast(message, 'danger', title);
   }
 
+  function getTodayDateString() {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   function isDateExpired(dateStr) {
     if (!dateStr) return false;
+    // Format YYYY-MM-DD
+    const match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      const year = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const day = parseInt(match[3], 10);
+      // Valid through 23:59:59.999 of the specified day in user's local timezone
+      const expDate = new Date(year, month, day, 23, 59, 59, 999);
+      return expDate.getTime() < Date.now();
+    }
     const exp = new Date(dateStr).getTime();
-    const now = new Date().getTime();
-    return (exp - now) <= 0;
+    return !isNaN(exp) && exp < Date.now();
   }
 
   function setupA11yKeyboardTraps() {
@@ -2536,6 +2651,9 @@
   window.PortalUI.openAuditModal = openAuditModal;
   window.PortalUI.openDocPreview = openDocPreview;
   window.PortalUI.resetFilters = resetAllFilters;
+  window.PortalUI.isDateExpired = isDateExpired;
+  window.PortalUI.getTodayDateString = getTodayDateString;
+  window.PortalUI.state = state;
   window.PortalUI.getRole = () => state.currentRole;
   window.PortalUI.getMainView = () => state.currentMainView;
   window.PortalUI.getAllVendors = () => state.table.allVendors;
