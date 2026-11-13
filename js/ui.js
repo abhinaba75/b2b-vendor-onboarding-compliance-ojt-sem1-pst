@@ -337,8 +337,44 @@
 
   function handleNavClick(navTarget) {
     state.currentSection = navTarget;
+    const role = (window.PortalAuth && window.PortalAuth.getCurrentUser() && window.PortalAuth.getCurrentUser().role) 
+      || state.currentRole || 'manager';
 
-    if (state.currentRole === 'vendor') {
+    if (role === 'superadmin') {
+      if (navTarget === 'dashboard') {
+        const viewEl = document.getElementById('view-superadmin');
+        if (viewEl) viewEl.scrollIntoView({ behavior: 'smooth' });
+      } else if (navTarget === 'compliance') {
+        const queueTable = document.getElementById('superAdminQueueTableBody');
+        if (queueTable) queueTable.scrollIntoView({ behavior: 'smooth' });
+      } else if (navTarget === 'analytics') {
+        const kpis = document.getElementById('superAdminKpiPending');
+        if (kpis) kpis.scrollIntoView({ behavior: 'smooth' });
+      } else if (navTarget === 'settings') {
+        const settingsModal = document.getElementById('systemSettingsModal');
+        if (settingsModal) {
+          const bsModal = bootstrap.Modal.getOrCreateInstance(settingsModal);
+          bsModal.show();
+        }
+      }
+    } else if (role === 'admin') {
+      if (navTarget === 'dashboard') {
+        const viewEl = document.getElementById('view-admin');
+        if (viewEl) viewEl.scrollIntoView({ behavior: 'smooth' });
+      } else if (navTarget === 'compliance') {
+        const mgrQueue = document.getElementById('adminManagerQueueTableBody');
+        if (mgrQueue) mgrQueue.scrollIntoView({ behavior: 'smooth' });
+      } else if (navTarget === 'analytics') {
+        const adminKpi = document.getElementById('adminKpiPendingManagers');
+        if (adminKpi) adminKpi.scrollIntoView({ behavior: 'smooth' });
+      } else if (navTarget === 'settings') {
+        const settingsModal = document.getElementById('systemSettingsModal');
+        if (settingsModal) {
+          const bsModal = bootstrap.Modal.getOrCreateInstance(settingsModal);
+          bsModal.show();
+        }
+      }
+    } else if (role === 'vendor') {
       if (navTarget === 'dashboard' || navTarget === 'compliance') {
         const wizardTabBtn = document.getElementById('tabVendorWizardBtn');
         if (wizardTabBtn) wizardTabBtn.click();
@@ -348,18 +384,22 @@
       }
     } else {
       if (navTarget === 'dashboard') {
+        const regTab = document.getElementById('mgrTabRegisterBtn');
+        if (regTab) regTab.click();
         const tableCard = document.getElementById('managerTableCard');
         if (tableCard) tableCard.scrollIntoView({ behavior: 'smooth' });
       } else if (navTarget === 'compliance') {
-        const expiringWidget = document.getElementById('expiringFilterGroup');
-        if (expiringWidget) expiringWidget.scrollIntoView({ behavior: 'smooth' });
+        const reqTab = document.getElementById('mgrTabRequirementsBtn');
+        if (reqTab) reqTab.click();
       } else if (navTarget === 'analytics') {
+        const regTab = document.getElementById('mgrTabRegisterBtn');
+        if (regTab) regTab.click();
         const chartsSection = document.getElementById('managerAnalyticsSection');
         if (chartsSection) chartsSection.scrollIntoView({ behavior: 'smooth' });
       } else if (navTarget === 'settings') {
         const settingsModal = document.getElementById('systemSettingsModal');
         if (settingsModal) {
-          const bsModal = new bootstrap.Modal(settingsModal);
+          const bsModal = bootstrap.Modal.getOrCreateInstance(settingsModal);
           bsModal.show();
         }
       }
@@ -715,6 +755,7 @@
   function recalculateProgress() {
     const progressBar = document.getElementById('onboardingProgressBar');
     const stepProgressBar = document.getElementById('stepperNavProgressBar');
+    const progressPercentLabel = document.getElementById('progressPercentLabel');
     if (!progressBar) return;
 
     let points = 0;
@@ -728,7 +769,16 @@
     if (einVal) points += 5;
     if (state.form.isEinVerified) points += 10;
 
-    const reqs = state.complianceRequirements[state.form.selectedCategory] || [];
+    let reqs = [];
+    const schema = (window.LocalDB && typeof window.LocalDB.getRequirementSchema === 'function')
+      ? window.LocalDB.getRequirementSchema()
+      : null;
+    if (schema && schema.customDocumentTypes && schema.customDocumentTypes.length > 0) {
+      reqs = schema.customDocumentTypes;
+    } else {
+      reqs = state.complianceRequirements[state.form.selectedCategory] || [];
+    }
+
     if (reqs.length > 0) {
       const pointsPerDoc = 40 / reqs.length;
       reqs.forEach(req => {
@@ -750,6 +800,16 @@
     progressBar.style.width = `${percentage}%`;
     progressBar.textContent = `${percentage}% Completed`;
     progressBar.setAttribute('aria-valuenow', percentage);
+
+    if (progressPercentLabel) {
+      progressPercentLabel.textContent = `${percentage}% Completed`;
+    }
+
+    if (percentage === 100) {
+      progressBar.className = 'progress-bar bg-success progress-bar-striped';
+    } else {
+      progressBar.className = 'progress-bar bg-primary progress-bar-striped progress-bar-animated';
+    }
 
     if (stepProgressBar) {
       const stepPercent = Math.round(((state.form.currentStep - 1) / (state.form.totalSteps - 1)) * 100);
@@ -1095,42 +1155,79 @@
 
     let docRowsHtml = '';
     (vendor.docs || []).forEach(d => {
+      const isExpired = isDateExpired(d.expDate);
+      let docBadge = `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">${d.docStatus || 'Under Review'}</span>`;
+      if (d.docStatus === 'Approved') {
+        docBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>`;
+      } else if (d.docStatus === 'Revision Requested' || isExpired) {
+        docBadge = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${isExpired ? 'Expired' : 'Revision Requested'}</span>`;
+      }
+
       docRowsHtml += `
         <li class="list-group-item d-flex justify-content-between align-items-center py-3">
           <div>
             <i class="bi bi-file-earmark-check text-primary me-2 fs-5"></i>
-            <span class="fw-semibold text-dark">${d.docName}</span>
-            <div class="text-muted small">Expires: ${d.expDate || 'N/A'}</div>
+            <span class="fw-semibold text-dark">${d.docName || d.docTitle || 'Certification File'}</span>
+            <div class="text-muted small">Expires: <strong class="${isExpired ? 'text-danger' : 'text-dark'}">${d.expDate || 'N/A'}</strong></div>
           </div>
-          <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
-            ${d.docStatus || 'Under Review'}
-          </span>
+          <div>${docBadge}</div>
         </li>
       `;
     });
+
+    if (!docRowsHtml) {
+      docRowsHtml = '<li class="list-group-item text-muted small py-3 text-center">No compliance documents attached yet. Complete the onboarding wizard to submit your certifications.</li>';
+    }
+
+    let statusBadgeHtml = '<span class="status-badge status-badge-pending"><i class="bi bi-hourglass-split"></i> Pending Review</span>';
+    let alertBannerHtml = `
+      <div class="alert alert-warning border border-warning-subtle d-flex align-items-center gap-3 mb-4">
+        <i class="bi bi-clock-history fs-3 text-warning"></i>
+        <div>
+          <div class="fw-bold">Procurement Review in Progress</div>
+          <div class="small">Your documents are under compliance review. Estimated turnaround time is 1-2 business days.</div>
+        </div>
+      </div>
+    `;
+
+    if (vendor.status === 'Approved') {
+      statusBadgeHtml = '<span class="status-badge status-badge-approved"><i class="bi bi-check-circle-fill"></i> Approved</span>';
+      alertBannerHtml = `
+        <div class="alert alert-success border border-success-subtle d-flex align-items-center gap-3 mb-4">
+          <i class="bi bi-patch-check-fill fs-3 text-success"></i>
+          <div>
+            <div class="fw-bold">Compliance Status: Fully Verified &amp; Active</div>
+            <div class="small">Your vendor compliance certification has been fully approved by Procurement Management. No further action is required.</div>
+          </div>
+        </div>
+      `;
+    } else if (vendor.status === 'Blocked') {
+      statusBadgeHtml = '<span class="status-badge status-badge-blocked"><i class="bi bi-shield-x"></i> Blocked</span>';
+      alertBannerHtml = `
+        <div class="alert alert-danger border border-danger-subtle d-flex align-items-center gap-3 mb-4">
+          <i class="bi bi-exclamation-octagon-fill fs-3 text-danger"></i>
+          <div>
+            <div class="fw-bold">Action Required: Compliance Escalation</div>
+            <div class="small">${vendor.rejectionReason || 'Your compliance dossier contains expired certifications or requires administrative revision.'}</div>
+          </div>
+        </div>
+      `;
+    }
 
     trackerContainer.innerHTML = `
       <div class="card-body p-4">
         <div class="d-flex justify-content-between align-items-start mb-4">
           <div>
-            <span class="badge bg-primary text-white mb-2">${vendor.id}</span>
-            <h4 class="fw-bold text-dark mb-1">${vendor.name}</h4>
-            <div class="text-muted small"><i class="bi bi-tag-fill me-1"></i> ${vendor.category} • Submitted: ${new Date(vendor.submissionDate).toLocaleDateString()}</div>
+            <span class="badge bg-primary text-white mb-2">${vendor.id || 'VEN-PENDING'}</span>
+            <h4 class="fw-bold text-dark mb-1">${vendor.name || 'Vendor Organization'}</h4>
+            <div class="text-muted small"><i class="bi bi-tag-fill me-1"></i> ${vendor.category || 'General'} • Submitted: ${vendor.submissionDate ? new Date(vendor.submissionDate).toLocaleDateString() : 'Active Session'}</div>
           </div>
-          <span class="status-badge status-badge-pending">
-            <i class="bi bi-hourglass-split"></i> ${vendor.status}
-          </span>
+          ${statusBadgeHtml}
         </div>
 
-        <div class="alert alert-warning border border-warning-subtle d-flex align-items-center gap-3 mb-4">
-          <i class="bi bi-clock-history fs-3 text-warning"></i>
-          <div>
-            <div class="fw-bold">Procurement Review in Progress</div>
-            <div class="small">Your documents are under compliance review. Estimated turnaround time is 1-2 business days.</div>
-          </div>
-        </div>
+        ${alertBannerHtml}
 
-        <h6 class="fw-bold text-dark mb-3">Submitted Compliance Stack</h6>
+        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-stack me-1 text-primary"></i> Submitted Compliance Documentation Stack</h6>
         <ul class="list-group mb-4">
           ${docRowsHtml}
         </ul>
@@ -1825,33 +1922,57 @@
         docsContainer.innerHTML = '<div class="alert alert-warning small">No compliance documents attached to this dossier.</div>';
       } else {
         let html = '';
-        docs.forEach(doc => {
+        docs.forEach((doc, idx) => {
           const isExpired = isDateExpired(doc.expDate);
-          const statusBadge = isExpired
+          const validityBadge = isExpired
             ? '<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-x-circle me-1"></i> Expired</span>'
             : '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i> Valid</span>';
 
+          const docStatus = doc.docStatus || 'Pending Review';
+          let docStatusBadge = '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Under Review</span>';
+          if (docStatus === 'Approved') {
+            docStatusBadge = '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-lg me-1"></i> Accepted</span>';
+          } else if (docStatus === 'Revision Requested') {
+            docStatusBadge = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-arrow-repeat me-1"></i> Revision Requested</span>';
+          }
+
           html += `
-            <div class="border rounded p-3 mb-2 bg-light d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div class="border rounded p-3 mb-2 bg-light d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2" id="reviewDocRow_${doc.docId || idx}">
               <div class="d-flex align-items-start gap-2">
                 <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 flex-shrink-0"></i>
                 <div>
-                  <div class="fw-semibold text-dark" style="font-size:0.9rem;">${doc.docName}</div>
+                  <div class="fw-semibold text-dark" style="font-size:0.9rem;">${doc.docName || doc.docTitle || 'Compliance File'}</div>
                   <div class="text-muted small">
                     Expiration Date: <strong class="${isExpired ? 'text-danger' : 'text-dark'}">${doc.expDate || 'N/A'}</strong> 
-                    ${isExpired ? '<span class="text-danger fw-bold">(Action Required: Expired)</span>' : ''}
+                    ${isExpired ? '<span class="text-danger fw-bold ms-1">(Action Required: Expired)</span>' : ''}
                   </div>
                 </div>
               </div>
-              <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                ${statusBadge}
-                <button type="button" 
-                        class="btn btn-sm btn-outline-secondary btn-view-doc" 
-                        data-doc-name="${doc.docName}" 
-                        data-doc-exp="${doc.expDate || 'N/A'}"
-                        data-vendor="${vendor.name}">
-                  <i class="bi bi-eye me-1"></i> Preview
-                </button>
+              <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+                ${validityBadge}
+                <span class="doc-status-slot" id="docStatusSlot_${doc.docId || idx}">${docStatusBadge}</span>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" 
+                          class="btn btn-outline-secondary btn-view-doc" 
+                          data-doc-name="${doc.docName || doc.docTitle}" 
+                          data-doc-exp="${doc.expDate || 'N/A'}"
+                          data-vendor="${vendor.name}"
+                          title="Preview Certified Document">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button type="button" 
+                          class="btn btn-outline-success btn-doc-accept" 
+                          data-doc-id="${doc.docId || idx}"
+                          title="Accept Document">
+                    <i class="bi bi-check-lg"></i> Accept
+                  </button>
+                  <button type="button" 
+                          class="btn btn-outline-warning text-dark btn-doc-revision" 
+                          data-doc-id="${doc.docId || idx}"
+                          title="Request Re-upload / Revision">
+                    <i class="bi bi-arrow-repeat"></i> Revise
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -1864,6 +1985,56 @@
             const docExp = btn.getAttribute('data-doc-exp');
             const vName = btn.getAttribute('data-vendor');
             openDocPreview(docName, docExp, vName);
+          });
+        });
+
+        // 3-State Mutation: Accept Document
+        docsContainer.querySelectorAll('.btn-doc-accept').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const dId = btn.getAttribute('data-doc-id');
+            const doc = (vendor.docs || []).find(d => String(d.docId || '') === dId || String(docs.indexOf(d)) === dId);
+            if (doc) {
+              doc.docStatus = 'Approved';
+              if (window.LocalDB) {
+                window.LocalDB.updateVendor(vendor.id, { docs: vendor.docs });
+                window.LocalDB.addAuditLog(
+                  'Procurement Manager',
+                  'manager',
+                  `Approved Document Certification: ${doc.docName}`,
+                  vendor.id
+                );
+              }
+              const slot = document.getElementById(`docStatusSlot_${dId}`);
+              if (slot) {
+                slot.innerHTML = '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-lg me-1"></i> Accepted</span>';
+              }
+              showSuccessToast(`Certification "${doc.docName}" approved.`, 'Document Accepted');
+            }
+          });
+        });
+
+        // 3-State Mutation: Request Re-upload / Revision
+        docsContainer.querySelectorAll('.btn-doc-revision').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const dId = btn.getAttribute('data-doc-id');
+            const doc = (vendor.docs || []).find(d => String(d.docId || '') === dId || String(docs.indexOf(d)) === dId);
+            if (doc) {
+              doc.docStatus = 'Revision Requested';
+              if (window.LocalDB) {
+                window.LocalDB.updateVendor(vendor.id, { docs: vendor.docs, status: 'Pending Review' });
+                window.LocalDB.addAuditLog(
+                  'Procurement Manager',
+                  'manager',
+                  `Requested Document Revision / Re-upload: ${doc.docName}`,
+                  vendor.id
+                );
+              }
+              const slot = document.getElementById(`docStatusSlot_${dId}`);
+              if (slot) {
+                slot.innerHTML = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-arrow-repeat me-1"></i> Revision Requested</span>';
+              }
+              showToast(`Revision requested for "${doc.docName}". Vendor notified.`, 'warning', 'Revision Requested');
+            }
           });
         });
       }
@@ -2272,27 +2443,107 @@
         btnPdf.disabled = true;
         btnPdf.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating PDF...';
 
+        const pdfFilename = `Executive_Vendor_Dossier_${new Date().toISOString().slice(0, 10)}.pdf`;
+
         const pdfEvent = new CustomEvent('vendor:export-pdf', {
           cancelable: true,
           detail: {
             vendors: currentData,
             timestamp: new Date().toISOString(),
-            filename: `Executive_Vendor_Dossier_${new Date().toISOString().slice(0, 10)}.pdf`
+            filename: pdfFilename
           }
         });
 
-        const dispatched = window.dispatchEvent(pdfEvent);
+        window.dispatchEvent(pdfEvent);
 
         setTimeout(() => {
+          generateExecutivePDF(currentData, pdfFilename);
           btnPdf.disabled = false;
           btnPdf.innerHTML = originalHtml;
-
-          if (dispatched) {
-            showSuccessToast('Dispatched compliance dataset to jsPDF + AutoTable executive report engine.', 'PDF Export Ready');
-          }
-        }, 800);
+        }, 600);
       });
     }
+  }
+
+  function generateExecutivePDF(vendors, customFilename) {
+    if (!vendors || !vendors.length) {
+      showToast('No vendor records available to export.', 'warning', 'Export Empty');
+      return;
+    }
+
+    const filename = customFilename || `Executive_Vendor_Dossier_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+    try {
+      if (window.jspdf && (window.jspdf.jsPDF || window.jspdf)) {
+        const jsPDFConstructor = window.jspdf.jsPDF || window.jspdf;
+        const doc = new jsPDFConstructor({ orientation: 'landscape', unit: 'pt', format: 'letter' });
+
+        // Navy banner
+        doc.setFillColor(10, 37, 64);
+        doc.rect(0, 0, doc.internal.pageSize.getWidth(), 55, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('TrustVendor | B2B Vendor Compliance Dossier Register', 40, 32);
+
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(203, 213, 225);
+        doc.text(`Generated: ${new Date().toLocaleString()}  •  Total Records: ${vendors.length}  •  Project ID: PST_PD_116`, 40, 46);
+
+        const tableRows = vendors.map(v => [
+          v.id || 'N/A',
+          v.name || 'N/A',
+          v.category || 'N/A',
+          v.ein || 'N/A',
+          v.status || 'Pending',
+          v.tier || 'Tier 2',
+          v.submissionDate ? new Date(v.submissionDate).toLocaleDateString() : 'N/A',
+          (v.docs || []).length + ' certs'
+        ]);
+
+        if (typeof doc.autoTable === 'function') {
+          doc.autoTable({
+            startY: 70,
+            head: [['Vendor ID', 'Company Name', 'Category', 'EIN / Tax ID', 'Status', 'Risk Tier', 'Submitted', 'Documents']],
+            body: tableRows,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [30, 41, 59],
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+              fontSize: 8.5,
+              cellPadding: 6
+            },
+            styles: {
+              fontSize: 8,
+              cellPadding: 5,
+              textColor: [15, 23, 42]
+            },
+            alternateRowStyles: {
+              fillColor: [248, 250, 252]
+            },
+            margin: { left: 40, right: 40 },
+            didDrawPage: function () {
+              const str = `Page ${doc.internal.getNumberOfPages()} • Confidential Compliance Report • LocalDB Offline Engine (Abhinaba Das & Mohd. Maaz Khan)`;
+              doc.setFontSize(7.5);
+              doc.setTextColor(148, 163, 184);
+              doc.text(str, 40, doc.internal.pageSize.getHeight() - 15);
+            }
+          });
+        }
+
+        doc.save(filename);
+        showSuccessToast(`Generated and downloaded executive PDF dossier (${vendors.length} vendor records).`, 'PDF Export Ready');
+        return;
+      }
+    } catch (err) {
+      console.warn('jsPDF generation failed, falling back to CSV export:', err);
+    }
+
+    fallbackExportCSV(vendors);
+    showToast('Exported dataset to CSV format.', 'info', 'CSV Downloaded');
   }
 
   function fallbackExportCSV(vendors) {
@@ -2650,6 +2901,8 @@
   window.PortalUI.closeReviewModal = closeReviewModal;
   window.PortalUI.openAuditModal = openAuditModal;
   window.PortalUI.openDocPreview = openDocPreview;
+  window.PortalUI.updateVendorStatusTracker = updateVendorStatusTracker;
+  window.PortalUI.generateExecutivePDF = generateExecutivePDF;
   window.PortalUI.resetFilters = resetAllFilters;
   window.PortalUI.isDateExpired = isDateExpired;
   window.PortalUI.getTodayDateString = getTodayDateString;
