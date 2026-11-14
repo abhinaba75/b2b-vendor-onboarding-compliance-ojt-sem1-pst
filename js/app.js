@@ -749,6 +749,11 @@
 
       // 5. Update deterministic progress bar calculation
       this.recalculateVendorProgress(vendorRecord);
+
+      // 6. If vendor has existing submitted data, populate status tracker immediately
+      if (window.PortalUI && typeof window.PortalUI.updateVendorStatusTracker === 'function') {
+        window.PortalUI.updateVendorStatusTracker(vendorRecord);
+      }
     },
 
     /**
@@ -1101,19 +1106,15 @@
       const step2Percent = Math.min(1, validUploadedCount / totalMandatory) * 45;
       totalScore += step2Percent;
 
-      // 3. Step 3: Remittance & Signatory (Weight: 20%)
-      const bank = document.getElementById('vendorBankName');
-      const routing = document.getElementById('vendorRoutingNumber');
-      const account = document.getElementById('vendorAccountNumber');
-      const signatory = document.getElementById('vendorSignatory');
+      // 3. Step 3: Attestation & Signatory (Weight: 20%)
+      const certify = document.getElementById('certifyAgreement');
+      const signatory = document.getElementById('signatoryName');
 
       let step3Filled = 0;
-      if (bank && bank.value.trim()) step3Filled++;
-      if (routing && routing.value.trim()) step3Filled++;
-      if (account && account.value.trim()) step3Filled++;
+      if (certify && certify.checked) step3Filled++;
       if (signatory && signatory.value.trim()) step3Filled++;
 
-      const step3Percent = (step3Filled / 4) * 20;
+      const step3Percent = (step3Filled / 2) * 20;
       totalScore += step3Percent;
 
       const finalProgress = Math.round(totalScore);
