@@ -2490,7 +2490,7 @@
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(203, 213, 225);
-        doc.text(`Generated: ${new Date().toLocaleString()}  •  Total Records: ${vendors.length}  •  Project ID: PST_PD_116`, 40, 46);
+        doc.text(`Generated: ${new Date().toLocaleString()}  •  Total Records: ${vendors.length}  •  Compliance Vault Report`, 40, 46);
 
         const tableRows = vendors.map(v => [
           v.id || 'N/A',
@@ -2526,7 +2526,7 @@
             },
             margin: { left: 40, right: 40 },
             didDrawPage: function () {
-              const str = `Page ${doc.internal.getNumberOfPages()} • Confidential Compliance Report • LocalDB Offline Engine (Abhinaba Das & Mohd. Maaz Khan)`;
+              const str = `Page ${doc.internal.getNumberOfPages()} • Confidential Compliance Report • TrustVendor Enterprise Platform`;
               doc.setFontSize(7.5);
               doc.setTextColor(148, 163, 184);
               doc.text(str, 40, doc.internal.pageSize.getHeight() - 15);
