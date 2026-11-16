@@ -18,13 +18,6 @@
   
   <!-- Corporate Trust Design System CSS -->
   <link rel="stylesheet" href="css/styles.css">
-  <!-- UI Activity: feat(ui): construct dual compliance status tracker header container in vendor view -->
-  <!-- UI Activity: feat(ui): design Stage 1 Account and Stage 2 Documentation visual progress cards -->
-  <!-- UI Activity: feat(ui): build contextual alert banners for onboarding feedback in vendor view -->
-  <!-- UI Activity: feat(ui): style Step 3 legal attestation checkbox and custom checkmark indicators -->
-  <!-- UI Activity: feat(ui): refine banking remittance form grid and routing number field layout -->
-  <!-- UI Activity: feat(ui): polish dual progress bar styling and animated threshold color transitions -->
-  <!-- UI Activity: refactor(ui): redesign enterprise authentication card layout in index.html -->
 </head>
 <body>
 
@@ -39,218 +32,173 @@
       
       <!-- =====================================================================
            VIEW PANEL 1: #view-auth (Role Selection / Interactive Login View)
-           WEEK 1 & 2 Deliverables: Hybrid Firebase Auth & 4-Tier Chain of Command
            ===================================================================== -->
-      <section id="view-auth" class="portal-view-container" aria-label="Role Selection and Authentication Portal">
-        <div class="auth-container p-3 p-md-5">
-          <div class="container" style="max-width: 960px;">
+      <section id="view-auth" class="portal-view-container min-vh-100 d-flex flex-column justify-content-center py-5" aria-label="Authentication Portal">
+        <div class="container" style="max-width: 480px;">
+          
+          <!-- Auth Branding Header -->
+          <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-shield-check text-primary fs-2"></i>
+              <span class="fw-bold fs-3 text-dark tracking-tight">TrustVendor</span>
+            </div>
+            <h1 class="h5 fw-bold text-dark mb-1">Sign in to your account</h1>
+            <p class="text-muted small mb-0">Enterprise vendor management and regulatory compliance</p>
+          </div>
+
+          <!-- Enterprise Authentication Card -->
+          <div class="portal-card shadow-sm border bg-white rounded-3">
             
-            <!-- Auth Branding Header -->
-            <div class="text-center mb-4">
-              <div class="d-inline-flex align-items-center gap-2 mb-2">
-                <i class="bi bi-shield-check text-primary fs-1"></i>
-                <span class="fw-bold fs-2 text-dark tracking-wide">TrustVendor</span>
-              </div>
-              <h1 class="h4 fw-bold text-dark mb-2">B2B Vendor Onboarding &amp; Compliance Portal</h1>
-              <p class="text-muted mx-auto" style="max-width: 620px;">
-                Enterprise multi-tenant regulatory verification platform enforcing 4-tier chain of command, automated document expiration calculations, heuristic risk tiers, and partitioned LocalDB persistence.
-              </p>
-              <div class="d-flex justify-content-center gap-2">
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 fw-semibold">
-                  <i class="bi bi-shield-lock-fill me-1"></i> Offline LocalDB Engine &bull; Project ID: PST_PD_116
-                </span>
-              </div>
+            <div class="portal-card-header bg-white pb-0 border-bottom-0 pt-3 px-4">
+              <ul class="nav nav-tabs card-header-tabs" id="authTabs" role="tablist">
+                <li class="nav-item flex-fill text-center" role="presentation">
+                  <button class="nav-link active fw-semibold text-dark w-100 py-2" id="authTabSignInBtn" data-bs-toggle="tab" data-bs-target="#authTabSignIn" type="button" role="tab" aria-controls="authTabSignIn" aria-selected="true">
+                    <i class="bi bi-box-arrow-in-right me-1 text-primary"></i> Sign In
+                  </button>
+                </li>
+                <li class="nav-item flex-fill text-center" role="presentation">
+                  <button class="nav-link fw-semibold text-dark w-100 py-2" id="authTabSignUpBtn" data-bs-toggle="tab" data-bs-target="#authTabSignUp" type="button" role="tab" aria-controls="authTabSignUp" aria-selected="false">
+                    <i class="bi bi-person-plus-fill me-1 text-success"></i> Create Account
+                  </button>
+                </li>
+              </ul>
             </div>
 
-            <!-- Unified Corporate Authentication Card -->
-            <div class="row justify-content-center mb-4">
-              <div class="col-lg-10 col-xl-9">
-                <div class="portal-card shadow-sm border-0">
-                  
-                  <!-- 1-Click Quick Demo Persona Access -->
-                  <div class="p-3 p-md-4 border-bottom bg-light rounded-top">
-                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
-                      <div>
-                        <div class="fw-bold text-dark small">
-                          <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Demo Persona Access
-                        </div>
-                        <div class="text-muted small" style="font-size:0.75rem;">1-Click instant authentication into each 4-tier role hierarchy level:</div>
-                      </div>
-                      <span class="badge bg-white text-muted border small d-none d-md-inline-block">Instant Access</span>
-                    </div>
-
-                    <div class="row g-2">
-                      <div class="col-6 col-md">
-                        <button type="button" class="btn btn-outline-dark btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="superadmin" data-persona-badge="active" title="Pre-Set Root Super Admin">
-                          <i class="bi bi-shield-shaded fs-5 text-purple mb-1"></i>
-                          <span class="fw-bold" style="font-size: 0.78rem;">Super Admin</span>
-                          <span class="text-muted" style="font-size: 0.68rem;">Root Authority</span>
-                        </button>
-                      </div>
-                      <div class="col-6 col-md">
-                        <button type="button" class="btn btn-outline-secondary btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="admin" title="Operations Admin">
-                          <i class="bi bi-shield-lock fs-5 text-warning mb-1"></i>
-                          <span class="fw-bold" style="font-size: 0.78rem;">Ops Admin</span>
-                          <span class="text-muted" style="font-size: 0.68rem;">Operations Lead</span>
-                        </button>
-                      </div>
-                      <div class="col-6 col-md">
-                        <button type="button" class="btn btn-outline-success btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="manager" id="authCardManager" title="Procurement Manager">
-                          <i class="bi bi-shield-check fs-5 text-success mb-1"></i>
-                          <span class="fw-bold" style="font-size: 0.78rem;">Manager</span>
-                          <span class="text-muted" style="font-size: 0.68rem;">Compliance Lead</span>
-                        </button>
-                      </div>
-                      <div class="col-6 col-md">
-                        <button type="button" class="btn btn-outline-primary btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="vendor-approved" id="authCardVendor" title="Approved External Vendor">
-                          <i class="bi bi-building-check fs-5 text-primary mb-1"></i>
-                          <span class="fw-bold" style="font-size: 0.78rem;">Vendor</span>
-                          <span class="text-muted" style="font-size: 0.68rem;">Active Supplier</span>
-                        </button>
-                      </div>
-                      <div class="col-12 col-md">
-                        <button type="button" class="btn btn-outline-warning text-dark btn-sm w-100 py-2 d-flex flex-column align-items-center text-center demo-role-btn h-100" data-demo-login="vendor-pending" title="Vendor Pending Approval (Holding Screen)">
-                          <i class="bi bi-hourglass-split fs-5 text-warning mb-1"></i>
-                          <span class="fw-bold" style="font-size: 0.78rem;">Pending Vendor</span>
-                          <span class="text-muted" style="font-size: 0.68rem;">Holding Review</span>
-                        </button>
+            <div class="portal-card-body p-4 pt-3">
+              <div class="tab-content" id="authTabsContent">
+                
+                <!-- TAB 1: SIGN IN -->
+                <div class="tab-pane fade show active" id="authTabSignIn" role="tabpanel" aria-labelledby="authTabSignInBtn">
+                  <form id="authSignInForm" novalidate>
+                    <div class="mb-3">
+                      <label for="signInEmail" class="form-label small fw-semibold text-secondary">
+                        Work Email Address <span class="text-danger">*</span>
+                      </label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="signInEmail" placeholder="name@company.com" required>
+                        <div class="invalid-feedback">Please enter a valid work email address.</div>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- Tabbed Manual Login / Registration -->
-                  <div class="portal-card-header bg-white pb-0 border-bottom-0 pt-3 px-4">
-                    <ul class="nav nav-tabs card-header-tabs" id="authTabs" role="tablist">
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link active fw-bold text-dark" id="authTabSignInBtn" data-bs-toggle="tab" data-bs-target="#authTabSignIn" type="button" role="tab" aria-controls="authTabSignIn" aria-selected="true">
-                          <i class="bi bi-box-arrow-in-right me-1 text-primary"></i> Sign In
-                        </button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link fw-bold text-dark" id="authTabSignUpBtn" data-bs-toggle="tab" data-bs-target="#authTabSignUp" type="button" role="tab" aria-controls="authTabSignUp" aria-selected="false">
-                          <i class="bi bi-person-plus-fill me-1 text-success"></i> Create Account (Sign Up)
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div class="portal-card-body p-4">
-                    <div class="tab-content" id="authTabsContent">
-                      
-                      <!-- TAB 1: SIGN IN -->
-                      <div class="tab-pane fade show active" id="authTabSignIn" role="tabpanel" aria-labelledby="authTabSignInBtn">
-                        <form id="authSignInForm" novalidate>
-                          <div class="alert alert-light border small text-muted d-flex align-items-center gap-2 mb-3">
-                            <i class="bi bi-info-circle-fill text-primary fs-5 flex-shrink-0"></i>
-                            <div>
-                              <strong>Default Super Admin:</strong> <code>superadmin@trustvendor.com</code> / <code>SuperAdmin2026!</code>
-                            </div>
-                          </div>
-
-                          <div class="mb-3">
-                            <label for="signInEmail" class="form-label small fw-semibold text-secondary">
-                              Email Address <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                              <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-                              <input type="email" class="form-control" id="signInEmail" placeholder="name@company.com" required>
-                              <div class="invalid-feedback">Please enter a valid email address.</div>
-                            </div>
-                          </div>
-
-                          <div class="mb-3">
-                            <label for="signInPassword" class="form-label small fw-semibold text-secondary">
-                              Password <span class="text-danger">*</span>
-                            </label>
-                            <div class="input-group">
-                              <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
-                              <input type="password" class="form-control" id="signInPassword" placeholder="••••••••" required>
-                              <div class="invalid-feedback">Please enter your password.</div>
-                            </div>
-                          </div>
-
-                          <button type="submit" class="btn btn-portal-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2" id="btnSignInSubmit">
-                            <span class="spinner-border spinner-border-sm d-none" id="signInSpinner" role="status" aria-hidden="true"></span>
-                            <span>Sign In to Account</span>
-                            <i class="bi bi-arrow-right"></i>
-                          </button>
-                        </form>
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="signInPassword" class="form-label small fw-semibold text-secondary mb-0">
+                          Password <span class="text-danger">*</span>
+                        </label>
+                        <span class="text-muted" style="font-size: 0.72rem;">Root: superadmin@trustvendor.com</span>
                       </div>
-
-                      <!-- TAB 2: SIGN UP WITH HIERARCHICAL APPROVAL ROUTING -->
-                      <div class="tab-pane fade" id="authTabSignUp" role="tabpanel" aria-labelledby="authTabSignUpBtn">
-                        <form id="authSignUpForm" novalidate>
-                          <div class="alert alert-info border-info small mb-3">
-                            <i class="bi bi-diagram-3-fill me-1"></i>
-                            <strong>Hierarchical Approval Routing:</strong> Registrations are placed in <code>PENDING_APPROVAL</code> status and routed to the respective management tier for verification before access is granted.
-                          </div>
-
-                          <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                              <label for="signUpName" class="form-label small fw-semibold text-secondary">Full Legal Name <span class="text-danger">*</span></label>
-                              <input type="text" class="form-control form-control-sm" id="signUpName" placeholder="e.g. David Miller" required>
-                              <div class="invalid-feedback">Name is required.</div>
-                            </div>
-                            <div class="col-md-6">
-                              <label for="signUpEmail" class="form-label small fw-semibold text-secondary">Work Email <span class="text-danger">*</span></label>
-                              <input type="email" class="form-control form-control-sm" id="signUpEmail" placeholder="name@company.com" required>
-                              <div class="invalid-feedback">Valid email required.</div>
-                            </div>
-                          </div>
-
-                          <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                              <label for="signUpPassword" class="form-label small fw-semibold text-secondary">Password <span class="text-danger">*</span></label>
-                              <input type="password" class="form-control form-control-sm" id="signUpPassword" placeholder="Min. 6 characters" minlength="6" required>
-                              <div class="invalid-feedback">At least 6 characters required.</div>
-                            </div>
-                            <div class="col-md-6">
-                              <label for="signUpRole" class="form-label small fw-semibold text-secondary">Requested Role <span class="text-danger">*</span></label>
-                              <select class="form-select form-select-sm" id="signUpRole" required>
-                                <option value="vendor" selected>External Vendor (Routes to Procurement Manager)</option>
-                                <option value="manager">Procurement Manager (Routes to Operations Admin)</option>
-                                <option value="admin">Operations Admin (Routes to Super Admin)</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                              <label for="signUpCompany" class="form-label small fw-semibold text-secondary">Organization / Company Name <span class="text-danger">*</span></label>
-                              <input type="text" class="form-control form-control-sm" id="signUpCompany" placeholder="e.g. Acme Logistics LLC" required>
-                              <div class="invalid-feedback">Company name is required.</div>
-                            </div>
-                            <div class="col-md-6">
-                              <label for="signUpCategory" class="form-label small fw-semibold text-secondary">Business Category</label>
-                              <select class="form-select form-select-sm" id="signUpCategory">
-                                <option value="Logistics / Freight">Logistics / Freight</option>
-                                <option value="IT / Cloud Services">IT / Cloud Services</option>
-                                <option value="Manufacturing / Raw Materials">Manufacturing / Raw Materials</option>
-                                <option value="Consulting / Professional Services">Consulting / Professional Services</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          <button type="submit" class="btn btn-success w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2" id="btnSignUpSubmit">
-                            <span class="spinner-border spinner-border-sm d-none" id="signUpSpinner" role="status" aria-hidden="true"></span>
-                            <span>Register &amp; Submit for Approval</span>
-                            <i class="bi bi-send-check"></i>
-                          </button>
-                        </form>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-key"></i></span>
+                        <input type="password" class="form-control" id="signInPassword" placeholder="••••••••" required>
+                        <div class="invalid-feedback">Please enter your password.</div>
                       </div>
-
                     </div>
-                  </div>
+
+                    <button type="submit" class="btn btn-portal-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 mt-4" id="btnSignInSubmit">
+                      <span class="spinner-border spinner-border-sm d-none" id="signInSpinner" role="status" aria-hidden="true"></span>
+                      <span>Sign In</span>
+                      <i class="bi bi-arrow-right"></i>
+                    </button>
+                  </form>
                 </div>
+
+                <!-- TAB 2: SIGN UP -->
+                <div class="tab-pane fade" id="authTabSignUp" role="tabpanel" aria-labelledby="authTabSignUpBtn">
+                  <form id="authSignUpForm" novalidate>
+                    <div class="row g-2 mb-3">
+                      <div class="col-12">
+                        <label for="signUpName" class="form-label small fw-semibold text-secondary">Full Legal Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="signUpName" placeholder="e.g. David Miller" required>
+                        <div class="invalid-feedback">Name is required.</div>
+                      </div>
+                      <div class="col-12">
+                        <label for="signUpEmail" class="form-label small fw-semibold text-secondary">Work Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control form-control-sm" id="signUpEmail" placeholder="name@company.com" required>
+                        <div class="invalid-feedback">Valid work email required.</div>
+                      </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                      <div class="col-md-6">
+                        <label for="signUpRole" class="form-label small fw-semibold text-secondary">Organization Role <span class="text-danger">*</span></label>
+                        <select class="form-select form-select-sm" id="signUpRole" required>
+                          <option value="vendor" selected>External Vendor</option>
+                          <option value="manager">Procurement Manager</option>
+                          <option value="admin">Operations Admin</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="signUpCategory" class="form-label small fw-semibold text-secondary">Industry Category</label>
+                        <select class="form-select form-select-sm" id="signUpCategory">
+                          <option value="Logistics / Freight">Logistics / Freight</option>
+                          <option value="IT / Cloud Services">IT / Cloud Services</option>
+                          <option value="Manufacturing / Raw Materials">Manufacturing / Raw Materials</option>
+                          <option value="Consulting / Professional Services">Consulting / Professional Services</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="signUpCompany" class="form-label small fw-semibold text-secondary">Company Name <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control form-control-sm" id="signUpCompany" placeholder="e.g. Acme Logistics LLC" required>
+                      <div class="invalid-feedback">Company name is required.</div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="signUpPassword" class="form-label small fw-semibold text-secondary">Password <span class="text-danger">*</span></label>
+                      <input type="password" class="form-control form-control-sm" id="signUpPassword" placeholder="Minimum 6 characters" minlength="6" required>
+                      <div class="invalid-feedback">At least 6 characters required.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 mt-3" id="btnSignUpSubmit">
+                      <span class="spinner-border spinner-border-sm d-none" id="signUpSpinner" role="status" aria-hidden="true"></span>
+                      <span>Create Account</span>
+                      <i class="bi bi-arrow-right"></i>
+                    </button>
+                  </form>
+                </div>
+
               </div>
             </div>
 
-            <!-- Team Attribution Footer -->
-            <div class="text-center mt-4 text-muted small">
-              Frontend UI/UX Engineering: <strong>Mohd. Maaz Khan</strong> &bull; Data Engine &amp; LocalDB: <strong>Abhinaba Das</strong>
+            <!-- Fast Role Switcher (Pre-configured demo access) -->
+            <div class="bg-light border-top p-3 rounded-bottom">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase;">
+                  <i class="bi bi-key-fill text-secondary me-1"></i> Quick Sign-In
+                </span>
+                <span class="badge bg-white text-muted border" style="font-size: 0.65rem;">Sandbox</span>
+              </div>
+              <div class="d-flex flex-wrap gap-1">
+                <button type="button" class="btn btn-white btn-sm border bg-white py-1 px-2 text-dark" data-demo-login="superadmin" style="font-size: 0.74rem;">
+                  <i class="bi bi-shield-shaded me-1 text-purple"></i> Super Admin
+                </button>
+                <button type="button" class="btn btn-white btn-sm border bg-white py-1 px-2 text-dark" data-demo-login="admin" style="font-size: 0.74rem;">
+                  <i class="bi bi-shield-lock me-1 text-warning"></i> Ops Admin
+                </button>
+                <button type="button" class="btn btn-white btn-sm border bg-white py-1 px-2 text-dark" data-demo-login="manager" id="authCardManager" style="font-size: 0.74rem;">
+                  <i class="bi bi-shield-check me-1 text-success"></i> Manager
+                </button>
+                <button type="button" class="btn btn-white btn-sm border bg-white py-1 px-2 text-dark" data-demo-login="vendor-approved" id="authCardVendor" style="font-size: 0.74rem;">
+                  <i class="bi bi-building-check me-1 text-primary"></i> Vendor
+                </button>
+                <button type="button" class="btn btn-white btn-sm border bg-white py-1 px-2 text-dark" data-demo-login="vendor-pending" style="font-size: 0.74rem;">
+                  <i class="bi bi-hourglass-split me-1 text-muted"></i> Pending
+                </button>
+              </div>
             </div>
 
           </div>
+
+          <!-- Enterprise Legal Footer -->
+          <div class="text-center mt-4 text-muted" style="font-size: 0.75rem;">
+            &copy; 2026 TrustVendor Technologies Inc. All rights reserved. &bull; 
+            <a href="#" class="text-muted text-decoration-none" onclick="event.preventDefault();">Privacy Policy</a> &bull; 
+            <a href="#" class="text-muted text-decoration-none" onclick="event.preventDefault();">Terms</a> &bull; 
+            <a href="#" class="text-muted text-decoration-none" onclick="event.preventDefault();">Security</a>
+          </div>
+
         </div>
       </section>
 
@@ -270,7 +218,7 @@
               <i class="bi bi-shield-check text-info fs-3"></i>
               <div>
                 <span class="fw-bold fs-5 text-white tracking-wide">TrustVendor</span>
-                <div class="brand-badge mt-1">ID: PST_PD_116</div>
+                <div class="brand-badge mt-1">Enterprise Suite</div>
               </div>
             </div>
           </div>
@@ -303,7 +251,7 @@
               <span>Analytics</span>
             </a>
 
-            <a href="#" class="nav-link" data-portal-nav="settings" id="sideNavSettings" aria-label="Go to System Settings and LocalDB State">
+            <a href="#" class="nav-link" data-portal-nav="settings" id="sideNavSettings" aria-label="Go to System Settings">
               <i class="bi bi-gear-wide-connected"></i>
               <span>Settings</span>
             </a>
@@ -473,7 +421,7 @@
                   <div class="text-muted small">Manage enterprise operational administrators, audit logs, and root system settings.</div>
                 </div>
                 <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#systemSettingsModal">
-                  <i class="bi bi-gear-wide-connected me-1"></i> System Settings &amp; LocalDB
+                  <i class="bi bi-gear-wide-connected me-1"></i> System Settings &amp; Storage
                 </button>
               </div>
 
@@ -512,7 +460,7 @@
                       </div>
                       <i class="bi bi-journal-text fs-1 text-info opacity-50"></i>
                     </div>
-                    <small class="text-muted">Chronological LocalDB audit log entries</small>
+                    <small class="text-muted">Chronological immutable audit log entries</small>
                   </div>
                 </div>
               </div>
@@ -524,7 +472,7 @@
                     <h3 class="h6 fw-bold text-dark mb-0">Operations Admin Approval Queue</h3>
                     <div class="text-muted small">Review and approve newly registered Operations Administrator accounts</div>
                   </div>
-                  <span class="badge bg-primary">4-Tier Chain: Tier 1 &gt; Tier 2</span>
+                  <span class="badge bg-primary">Tier 1 Authorization</span>
                 </div>
                 <div class="table-responsive">
                   <table class="table table-portal align-middle table-hover mb-0" aria-label="Admin Approval Queue Table">
@@ -1193,7 +1141,7 @@
                         <h3 class="h6 fw-bold text-dark mb-0">Vendor Sign-Up Approvals (Stage 2 Gate)</h3>
                         <div class="text-muted small">Authorize newly registered supplier accounts to unlock their onboarding dashboard</div>
                       </div>
-                      <span class="badge bg-primary">Hierarchical Chain of Command</span>
+                      <span class="badge bg-primary">Stage 2 Authorization</span>
                     </div>
                     <div class="table-responsive">
                       <table class="table table-portal align-middle table-hover mb-0" aria-label="Vendor Approval Queue">
@@ -1224,7 +1172,7 @@
                           <div class="text-muted small">Define required document counts, custom compliance file types, and vendor submission deadlines</div>
                         </div>
                         <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">
-                          <i class="bi bi-hdd-network-fill me-1"></i> Persists to LocalDB
+                          <i class="bi bi-shield-check me-1"></i> Policy Active
                         </span>
                       </div>
                     </div>
@@ -1422,7 +1370,7 @@
             <i class="bi bi-file-earmark-lock display-3 text-secondary mb-3"></i>
             <h5 class="fw-bold text-dark" id="docPreviewVendor">Vendor Compliance Certificate</h5>
             <p class="text-muted small mb-3">
-              Document certified and registered in LocalDB metadata. Quota-safe metadata extracted to respect client storage limits.
+              Document certified and verified. Cryptographic metadata extracted and recorded in secure compliance vault.
             </p>
             <div class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
               <i class="bi bi-patch-check-fill me-1"></i> SHA-256 Checksum Verified
@@ -1436,20 +1384,20 @@
     </div>
   </div>
 
-  <!-- MODAL 4: SYSTEM SETTINGS & LOCALDB STATE MODAL -->
+  <!-- MODAL 4: SYSTEM SETTINGS & DATA VAULT MODAL -->
   <div class="modal fade" id="systemSettingsModal" tabindex="-1" aria-labelledby="systemSettingsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-light">
           <h5 class="modal-title fw-bold text-dark" id="systemSettingsModalLabel">
-            <i class="bi bi-gear-wide-connected me-2 text-primary"></i> System Settings &amp; LocalDB State
+            <i class="bi bi-gear-wide-connected me-2 text-primary"></i> System Settings &amp; Data Vault
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close Settings"></button>
         </div>
         <div class="modal-body p-4">
           <div class="alert alert-light border small text-muted mb-3">
             <i class="bi bi-info-circle-fill text-primary me-1"></i>
-            <strong>LocalDB Partitioned Engine:</strong> State is segregated across <code>vendors_db</code>, <code>audit_logs</code>, <code>mock_api_cache</code>, and <code>system_settings</code>.
+            <strong>Enterprise Partitioned Storage:</strong> State is segregated across <code>vendors_db</code>, <code>audit_logs</code>, <code>mock_api_cache</code>, and <code>system_settings</code>.
           </div>
 
           <div class="list-group list-group-flush small mb-4">
@@ -1466,13 +1414,13 @@
               <span class="text-success fw-bold">Enabled</span>
             </div>
             <div class="list-group-item px-0 d-flex justify-content-between align-items-center">
-              <span>4-Tier Role Chain of Command</span>
-              <span class="badge bg-primary">Hierarchical Guarded</span>
+              <span>Role-Based Access Control (RBAC)</span>
+              <span class="badge bg-primary">Enterprise Enforced</span>
             </div>
           </div>
 
           <h6 class="fw-bold text-dark small border-bottom pb-2 mb-3">
-            <i class="bi bi-arrow-down-up text-primary me-1"></i> JSON State Portability &amp; Persistence (Abhinaba Das)
+            <i class="bi bi-arrow-down-up text-primary me-1"></i> Data Portability &amp; Backups
           </h6>
           
           <div class="d-grid gap-2 mb-3">
@@ -1490,8 +1438,12 @@
 
           <div class="border-top pt-3">
             <button type="button" class="btn btn-outline-danger btn-sm w-100" id="btnResetLocalDBToSeed">
-              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset to Factory Initial Seed
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Database to Factory Defaults
             </button>
+          </div>
+
+          <div class="mt-3 pt-3 border-top text-muted small text-center" style="font-size: 0.72rem;">
+            TrustVendor Enterprise Suite &bull; Engineering &amp; Architecture: <strong>Mohd. Maaz Khan</strong> &bull; <strong>Abhinaba Das</strong>
           </div>
         </div>
         <div class="modal-footer bg-light py-2">
@@ -1511,16 +1463,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
-  <!-- 1. Core Partitioned Storage Engine (Abhinaba Das - Week 1 Deliverable) -->
+  <!-- 1. Core Partitioned Storage Engine -->
   <script src="js/localdb.js"></script>
 
-  <!-- 2. Offline Firebase Auth Controller & 4-Tier Chain of Command (Abhinaba Das - Week 1 & 2 Deliverable) -->
+  <!-- 2. Authentication Controller & Role Authority Services -->
   <script src="js/auth.js"></script>
 
-  <!-- 3. Master Frontend UI Module (Mohd. Maaz Khan Deliverable) -->
+  <!-- 3. Master Frontend UI Module -->
   <script src="js/ui.js"></script>
 
-  <!-- 4. Master Application Controller, SPA Switcher & Dynamic DOM (Abhinaba Das - Week 2 Deliverable) -->
+  <!-- 4. Master Application Controller, SPA Switcher & Dynamic Views -->
   <script src="js/app.js"></script>
 
 </body>
