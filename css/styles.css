@@ -779,3 +779,6 @@ textarea:focus-visible,
 .timeline-item.dot-danger .timeline-dot::after {
   background-color: var(--portal-danger);
 }
+
+/* Responsive Auth Card Elevation */
+.portal-card.auth-elevated { box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08); }
