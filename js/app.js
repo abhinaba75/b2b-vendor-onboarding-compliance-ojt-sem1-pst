@@ -303,7 +303,7 @@
           if (creds) {
             try {
               const res = await window.PortalAuth.signInWithEmailAndPassword(creds.email, creds.password);
-              window.PortalUI.showSuccessToast(`Logged in as ${res.user.role.toUpperCase()}: ${res.user.name}`, 'Demo Persona Activated');
+              window.PortalUI.showSuccessToast(`Signed in as ${res.user.name || res.user.email} (${res.user.role.toUpperCase()})`, 'Session Initialized');
             } catch (err) {
               window.PortalUI.showErrorToast(err.message, 'Login Failed');
             }
@@ -671,7 +671,7 @@
           };
 
           window.LocalDB.saveRequirementSchema(newSchema);
-          window.PortalUI.showSuccessToast('Manager compliance requirements schema updated and persisted to LocalDB!', 'Requirements Published');
+          window.PortalUI.showSuccessToast('Compliance requirements published successfully.', 'Policy Updated');
         });
       }
     },
@@ -1159,7 +1159,7 @@
         btnExportJSON.onclick = (e) => {
           e.preventDefault();
           window.LocalDB.downloadStateExportFile();
-          window.PortalUI.showSuccessToast('Partitioned LocalDB JSON exported and downloaded.', 'State Backup Generated');
+          window.PortalUI.showSuccessToast('Database backup exported and downloaded.', 'State Backup Generated');
         };
       }
 
@@ -1176,7 +1176,7 @@
               const jsonContent = event.target.result;
               const success = window.LocalDB.importStateJSON(jsonContent);
               if (success) {
-                window.PortalUI.showSuccessToast('LocalDB state imported successfully across all partitions!', 'Database Restored');
+                window.PortalUI.showSuccessToast('Database backup restored successfully across all partitions!', 'Database Restored');
                 setTimeout(() => window.location.reload(), 1200);
               } else {
                 window.PortalUI.showErrorToast('Failed to parse state backup. Invalid JSON format.', 'Import Error');
@@ -1193,9 +1193,9 @@
       const btnResetDB = document.getElementById('btnResetLocalDBToSeed');
       if (btnResetDB) {
         btnResetDB.onclick = () => {
-          if (confirm('Are you sure you want to reset LocalDB to default factory state? All local modifications will be replaced.')) {
+          if (confirm('Are you sure you want to reset the database to default initial state? All local modifications will be replaced.')) {
             window.LocalDB.resetToDefault();
-            window.PortalUI.showToast('LocalDB partitions reset to default factory seed.', 'info', 'Database Reset');
+            window.PortalUI.showToast('Database reset to factory initial defaults.', 'info', 'Database Reset');
             setTimeout(() => window.location.reload(), 800);
           }
         };
