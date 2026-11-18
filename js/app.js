@@ -90,6 +90,7 @@
 
       // Case 2: Authenticated but Account PENDING_APPROVAL -> Show Holding Screen
       if (user.status === 'PENDING_APPROVAL') {
+        if (appShell) appShell.classList.remove('d-none');
         if (viewPending) {
           viewPending.classList.remove('d-none');
           this.renderPendingHoldingScreen(user);
@@ -100,6 +101,7 @@
 
       // Case 3: Account REJECTED -> Show Holding Screen with Rejection details
       if (user.status === 'REJECTED') {
+        if (appShell) appShell.classList.remove('d-none');
         if (viewPending) {
           viewPending.classList.remove('d-none');
           this.renderRejectedHoldingScreen(user);
