@@ -1030,17 +1030,21 @@
               : false;
 
             if (isExpired) {
+              input.setCustomValidity('Must be a valid future expiration date.');
               input.classList.add('is-invalid');
               input.classList.remove('is-valid');
             } else {
+              input.setCustomValidity('');
               input.classList.remove('is-invalid');
               input.classList.add('is-valid');
             }
           } else {
             input.classList.remove('is-valid');
             if (input.required) {
+              input.setCustomValidity('Must be a valid future expiration date.');
               input.classList.add('is-invalid');
             } else {
+              input.setCustomValidity('');
               input.classList.remove('is-invalid');
             }
           }

@@ -621,8 +621,10 @@
     if (!expiryVal) {
       input.classList.remove('is-valid');
       if (input.required) {
+        input.setCustomValidity('Must be a valid future expiration date.');
         input.classList.add('is-invalid');
       } else {
+        input.setCustomValidity('');
         input.classList.remove('is-invalid');
       }
       updateDocRowStatusIcon(docKey);
@@ -632,10 +634,12 @@
 
     const isExpired = isDateExpired(expiryVal);
     if (isExpired) {
+      input.setCustomValidity('Must be a valid future expiration date.');
       input.classList.add('is-invalid');
       input.classList.remove('is-valid');
       showErrorToast(`Expiration date cannot be in the past (${expiryVal}).`, 'Date Constraint');
     } else {
+      input.setCustomValidity('');
       input.classList.remove('is-invalid');
       input.classList.add('is-valid');
     }
@@ -850,6 +854,9 @@
 
     const inputs = currentPane.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
+      // Expiry inputs are validated by the dedicated expiration validator below
+      if (input.classList.contains('doc-expiry-input')) return;
+
       if (!input.checkValidity()) {
         input.classList.add('is-invalid');
         isValid = false;
@@ -916,9 +923,11 @@
             const expired = isDateExpired(expVal);
             if (expired) {
               isValid = false;
+              expiryInput.setCustomValidity('Must be a valid future expiration date.');
               expiryInput.classList.add('is-invalid');
               expiryInput.classList.remove('is-valid');
             } else {
+              expiryInput.setCustomValidity('');
               expiryInput.classList.remove('is-invalid');
               expiryInput.classList.add('is-valid');
               state.form.uploadedDocuments[reqId] = state.form.uploadedDocuments[reqId] || {};
@@ -926,9 +935,11 @@
             }
           } else if (req.mandatory) {
             isValid = false;
+            expiryInput.setCustomValidity('Must be a valid future expiration date.');
             expiryInput.classList.add('is-invalid');
             expiryInput.classList.remove('is-valid');
           } else {
+            expiryInput.setCustomValidity('');
             expiryInput.classList.remove('is-invalid');
           }
         }
@@ -942,9 +953,11 @@
         if (val) {
           if (isDateExpired(val)) {
             isValid = false;
+            expInput.setCustomValidity('Must be a valid future expiration date.');
             expInput.classList.add('is-invalid');
             expInput.classList.remove('is-valid');
           } else {
+            expInput.setCustomValidity('');
             expInput.classList.remove('is-invalid');
             expInput.classList.add('is-valid');
             if (docId) {
@@ -954,8 +967,12 @@
           }
         } else if (expInput.required) {
           isValid = false;
+          expInput.setCustomValidity('Must be a valid future expiration date.');
           expInput.classList.add('is-invalid');
           expInput.classList.remove('is-valid');
+        } else {
+          expInput.setCustomValidity('');
+          expInput.classList.remove('is-invalid');
         }
       });
 
