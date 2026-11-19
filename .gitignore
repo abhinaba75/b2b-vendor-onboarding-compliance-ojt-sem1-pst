@@ -24,6 +24,14 @@ tmp/
 *.tmp
 *.bak
 
+# Media & Video Walkthrough Recordings
+*.mp4
+*.webm
+
+# Teammate Working Directories
+ForMaaz/
+formaaz/
+
 # OJT Documentation & Logbooks
 *logbook*
 *Logbook*
